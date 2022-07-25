@@ -74,6 +74,9 @@ class ZipFile implements ShouldQueue
         // Zip file locally
         $zip = new \ZipArchive;
         $zipFilePath = storage_path('app/tmp.zip');
+        // Make sure to delete previous tmp-zip even this operation should have been performed during previous compression
+        if (Storage::disk('local')->exists('tmp.zip')) Storage::disk('local')->delete('tmp.zip');
+
         if ($zip->open($zipFilePath, \ZipArchive::CREATE) === true) {
             $zip->addFromString($this->fileData['file_name'], $file_content);
         }
@@ -87,6 +90,9 @@ class ZipFile implements ShouldQueue
 
         // Remove file from S3/plain
         Storage::delete("plain/{$this->fileData['file_md5']}");
+
+        // Remove tmp.zip
+        Storage::disk('local')->delete('tmp.zip');
 
         // Trigger message to update file status in "Instashare Admin"
         UpdateFileStatus::dispatch([
@@ -114,6 +120,10 @@ class ZipFile implements ShouldQueue
             'error_code'    => $exception->getCode(),
             'error_message' => $exception->getMessage()
         ]);
+
+        // Remove temp file if exists
+        if (Storage::disk('local')->exists('tmp.zip'))
+            Storage::disk('local')->delete('tmp.zip');
 
         // Trigger job in "Instashare Admin" to update file status (delete file's record from database and notify user)
         UpdateFileStatus::dispatch([
