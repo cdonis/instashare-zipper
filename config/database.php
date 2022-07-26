@@ -2,6 +2,8 @@
 
 use Illuminate\Support\Str;
 
+$DATABASE_URL = parse_url('postgres://bdfjlryotunkme:4924df3522876907fd4e0a45acfbf32de950db6b078c888f600378356461f5ed@ec2-107-22-122-106.compute-1.amazonaws.com:5432/d75fqk1vchjr6t');
+
 return [
 
     /*
@@ -15,7 +17,7 @@ return [
     |
     */
 
-    'default' => env('DB_CONNECTION', 'mysql'),
+    'default' => env('DB_CONNECTION', 'pgsql'),
 
     /*
     |--------------------------------------------------------------------------
@@ -64,18 +66,18 @@ return [
         ],
 
         'pgsql' => [
-            'driver' => 'pgsql',
-            'url' => env('DATABASE_URL'),
-            'host' => env('DB_HOST', '127.0.0.1'),
-            'port' => env('DB_PORT', '5432'),
-            'database' => env('DB_DATABASE', 'forge'),
-            'username' => env('DB_USERNAME', 'forge'),
-            'password' => env('DB_PASSWORD', ''),
-            'charset' => 'utf8',
-            'prefix' => '',
+            'driver'    => 'pgsql',
+            'url'       => env('DATABASE_URL'),
+            'host'      => $DATABASE_URL["host"], 
+            'port'      => $DATABASE_URL["port"], 
+            'database'  => ltrim($DATABASE_URL["path"], "/"), 
+            'username'  => $DATABASE_URL["user"], 
+            'password'  => $DATABASE_URL["pass"],
+            'charset'   => 'utf8',
+            'prefix'    => '',
             'prefix_indexes' => true,
             'search_path' => 'public',
-            'sslmode' => 'prefer',
+            'sslmode'   => 'require',
         ],
 
         'sqlsrv' => [
