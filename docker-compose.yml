@@ -1,0 +1,45 @@
+version: '3.8'
+services:
+    instashare-zipper:
+        build:
+            context: .
+            dockerfile: Dockerfile
+        command: 'php artisan serve --host=0.0.0.0'
+        volumes:
+            - .:/app
+        ports:
+            - 8002:8000
+        networks:
+            - instashare
+        depends_on:
+            - pgsql
+            
+    instashare-zipper-rbqueue:
+        build:
+          context: .
+          dockerfile: Dockerfile
+        command: 'php artisan queue:work'
+        networks:
+          - instashare
+        depends_on:
+          - pgsql  
+
+    pgsql:
+        image: postgres:14
+        container_name: pgsql_zipper
+        ports:
+            - 5436:5432
+        environment:
+            PGPASSWORD: instadmin*2022
+            POSTGRES_DB: instashare-zipper
+            POSTGRES_USER: instashare
+            POSTGRES_PASSWORD: instadmin*2022
+        volumes:
+            - ./storage/dbdata:/var/lib/postgresql/data
+        networks:
+            - instashare
+
+networks:
+    instashare:
+      external:
+        name: instashare
