@@ -11,6 +11,7 @@ use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use Throwable;
+use ZipArchive;
 
 class ZipFile implements ShouldQueue
 {
@@ -32,14 +33,14 @@ class ZipFile implements ShouldQueue
      *
      * @var int
      */
-    public $tries = 3;
+    //public $tries = 3;
     
     /**
      * The number of seconds the job can run before timing out.
      *
      * @var int
      */
-    public $timeout = 660;
+    //public $timeout = 660;
 
     /**
      * Create a new job instance.
@@ -56,10 +57,12 @@ class ZipFile implements ShouldQueue
      *
      * @return array
      */
+    /*
     public function backoff()
     {
-        return [3, 10, 20];
+        return [3, 5, 10];
     }
+    */
 
     /**
      * Execute the job.
@@ -72,12 +75,12 @@ class ZipFile implements ShouldQueue
         $file_content = Storage::get("plain/{$this->fileData['file_md5']}");
         
         // Zip file locally
-        $zip = new \ZipArchive;
+        $zip = new ZipArchive;
         $zipFilePath = storage_path('app/tmp.zip');
         // Make sure to delete previous tmp-zip even this operation should have been performed during previous compression
         if (Storage::disk('local')->exists('tmp.zip')) Storage::disk('local')->delete('tmp.zip');
 
-        if ($zip->open($zipFilePath, \ZipArchive::CREATE) === true) {
+        if ($zip->open($zipFilePath, ZipArchive::CREATE) === true) {
             $zip->addFromString($this->fileData['file_name'], $file_content);
         }
         $zip->close();

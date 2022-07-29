@@ -34,7 +34,8 @@ RUN set -eux; \
     libwebp-dev \
     libxpm-dev \
     libmcrypt-dev \
-    libonig-dev; \
+    libonig-dev \
+    libzip-dev; \
     rm -rf /var/lib/apt/lists/*
 
 RUN set -eux; \
@@ -45,7 +46,9 @@ RUN set -eux; \
     # Install the PHP pdo_pgsql extention
     docker-php-ext-install pdo_pgsql; \
     # Install the PHP sockets extention
-    docker-php-ext-install sockets; 
+    docker-php-ext-install sockets; \
+    # Install the PHP zip extention
+    docker-php-ext-install zip;
 
 RUN curl -sS https://getcomposer.org/installer | php -- \
     --install-dir=/usr/local/bin --filename=composer

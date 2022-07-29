@@ -19,6 +19,8 @@ services:
           context: .
           dockerfile: Dockerfile
         command: 'php artisan queue:work'
+        volumes:
+          - .:/app
         networks:
           - instashare
         depends_on:
